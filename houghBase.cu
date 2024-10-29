@@ -19,6 +19,7 @@ const int degreeInc = 2;
 const int degreeBins = 180 / degreeInc;
 const int rBins = 100;
 const float radInc = degreeInc * M_PI / 180;
+
 //*****************************************************************
 // The CPU function returns a pointer to the accummulator
 void CPU_HoughTran (unsigned char *pic, int w, int h, int **acc)
@@ -72,8 +73,8 @@ void CPU_HoughTran (unsigned char *pic, int w, int h, int **acc)
 // The accummulator memory needs to be allocated by the host in global memory
 __global__ void GPU_HoughTran (unsigned char *pic, int w, int h, int *acc, float rMax, float rScale, float *d_Cos, float *d_Sin)
 {
-  //TODO calcular: int gloID = ?
-  int gloID = w * h + 1; //TODO
+  // int gloID = w * h + 1; // Previous
+  int gloID = blockIdx.x * blockDim.x + threadIdx.x;
   if (gloID > w * h) return;      // in case of extra threads in block
 
   int xCent = w / 2;
@@ -122,7 +123,7 @@ int main (int argc, char **argv)
   cudaMalloc ((void **) &d_Sin, sizeof (float) * degreeBins);
 
   // CPU calculation
-  CPU_HoughTran(inImg.pixels, w, h, &cpuht);
+  CPU_HoughTran(inImg.pixels.data(), w, h, &cpuht);
 
   // pre-compute values to be stored
   float *pcCos = (float *) malloc (sizeof (float) * degreeBins);
@@ -146,7 +147,7 @@ int main (int argc, char **argv)
   unsigned char *d_in, *h_in;
   int *d_hough, *h_hough;
 
-  h_in = inImg.pixels; // h_in contiene los pixeles de la imagen
+  h_in = inImg.pixels.data(); // h_in contiene los pixeles de la imagen
 
   h_hough = (int *) malloc (degreeBins * rBins * sizeof (int));
 
@@ -171,7 +172,18 @@ int main (int argc, char **argv)
   }
   printf("Done!\n");
 
-  // TODO clean-up
+  // cleanup
+  // Free host memory
+  free(cpuht);
+  free(h_hough);
+  free(pcCos);
+  free(pcSin);
+
+  // Free device memory
+  cudaFree(d_in);
+  cudaFree(d_hough);
+  cudaFree(d_Cos);
+  cudaFree(d_Sin);
 
   return 0;
 }
