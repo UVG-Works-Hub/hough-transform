@@ -83,6 +83,12 @@ __global__ void GPU_HoughTran (unsigned char *pic, int w, int h, int *acc, float
   //TODO explicar bien bien esta parte. Dibujar un rectangulo a modo de imagen sirve para visualizarlo mejor
   int xCoord = gloID % w - xCent;
   int yCoord = yCent - gloID / w;
+  /// Explicación:
+  /// El cálculo de las coordenadas `xCoord` y `yCoord` se realiza para modificar el sistema de coordenadas de la imagen.
+  /// En lugar de basarse en el sistema de ubicación de píxeles tradicional, donde el origen (0,0) está en la esquina superior izquierda,
+  /// estas coordenadas se calculan respecto al centro de la imagen. `xCoord` se obtiene restando la mitad del ancho de la imagen a la coordenada X del píxel,
+  /// y `yCoord` se obtiene restando la coordenada Y del píxel de la mitad de la altura de la imagen, invirtiendo así el eje Y, pues normalmente el eje Y crece hacia abajo.
+  /// Este cambio es util para los pasos posteriores, ya que facilita el cálculo de la distancia de cada punto a una recta en el espacio de parámetros (r, θ).
 
   //TODO eventualmente usar memoria compartida para el acumulador
 
