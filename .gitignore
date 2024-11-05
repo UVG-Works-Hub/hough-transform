@@ -7,6 +7,5 @@
 *.deb
 *.o
 *.exe
-*.png
 
 playground.cu
