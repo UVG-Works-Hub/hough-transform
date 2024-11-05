@@ -7,7 +7,7 @@
  Description   :
  To build use  : make
  ============================================================================
- */
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -22,11 +22,11 @@ const int rBins = 100;
 const float radInc = degreeInc * M_PI / 180;
 
 //*****************************************************************
-// The CPU function returns a pointer to the accummulator
+// The CPU function returns a pointer to the accumulator
 void CPU_HoughTran(unsigned char *pic, int w, int h, int **acc)
 {
     float rMax = sqrt(1.0 * w * w + 1.0 * h * h) / 2;  //(w^2 + h^2)/2, radio max equivalente a centro -> esquina
-    *acc = new int[rBins * degreeBins];                // el acumulador, conteo depixeles encontrados, 90*180/degInc = 9000
+    *acc = new int[rBins * degreeBins];                // el acumulador, conteo de pixeles encontrados, 90*180/degInc = 9000
     memset(*acc, 0, sizeof(int) * rBins * degreeBins); // init en ceros
     int xCent = w / 2;
     int yCent = h / 2;
@@ -45,7 +45,10 @@ void CPU_HoughTran(unsigned char *pic, int w, int h, int **acc)
                 {
                     float r = xCoord * cos(theta) + yCoord * sin(theta);
                     int rIdx = (r + rMax) / rScale;
-                    (*acc)[rIdx * degreeBins + tIdx]++; //+1 para este radio r y este theta
+                    if (rIdx >= 0 && rIdx < rBins)
+                    {                                       // Validar índices
+                        (*acc)[rIdx * degreeBins + tIdx]++; //+1 para este radio r y este theta
+                    }
                     theta += radInc;
                 }
             }
@@ -71,28 +74,25 @@ void CPU_HoughTran(unsigned char *pic, int w, int h, int **acc)
 // }
 
 // GPU kernel. One thread per image pixel is spawned.
-// The accummulator memory needs to be allocated by the host in global memory
+// The accumulator memory needs to be allocated by the host in global memory
 __global__ void GPU_HoughTran(unsigned char *pic, int w, int h, int *acc, float rMax, float rScale, float *d_Cos, float *d_Sin)
 {
-    // int gloID = w * h + 1; // Previous
     int gloID = blockIdx.x * blockDim.x + threadIdx.x;
-    if (gloID > w * h)
-        return; // in case of extra threads in block
+    if (gloID >= w * h)
+        return; // Corregido: >= en lugar de >
 
     int xCent = w / 2;
     int yCent = h / 2;
 
-    // TODO explicar bien bien esta parte. Dibujar un rectangulo a modo de imagen sirve para visualizarlo mejor
+    // Explicación:
+    // El cálculo de las coordenadas `xCoord` y `yCoord` se realiza para modificar el sistema de coordenadas de la imagen.
+    // En lugar de basarse en el sistema de ubicación de píxeles tradicional, donde el origen (0,0) está en la esquina superior izquierda,
+    // estas coordenadas se calculan respecto al centro de la imagen. `xCoord` se obtiene restando la mitad del ancho de la imagen a la coordenada X del píxel,
+    // y `yCoord` se obtiene restando la coordenada Y del píxel de la mitad de la altura de la imagen, invirtiendo así el eje Y, pues normalmente el eje Y crece hacia abajo.
+    // Este cambio es util para los pasos posteriores, ya que facilita el cálculo de la distancia de cada punto a una recta en el espacio de parámetros (r, θ).
+
     int xCoord = gloID % w - xCent;
     int yCoord = yCent - gloID / w;
-    /// Explicación:
-    /// El cálculo de las coordenadas `xCoord` y `yCoord` se realiza para modificar el sistema de coordenadas de la imagen.
-    /// En lugar de basarse en el sistema de ubicación de píxeles tradicional, donde el origen (0,0) está en la esquina superior izquierda,
-    /// estas coordenadas se calculan respecto al centro de la imagen. `xCoord` se obtiene restando la mitad del ancho de la imagen a la coordenada X del píxel,
-    /// y `yCoord` se obtiene restando la coordenada Y del píxel de la mitad de la altura de la imagen, invirtiendo así el eje Y, pues normalmente el eje Y crece hacia abajo.
-    /// Este cambio es util para los pasos posteriores, ya que facilita el cálculo de la distancia de cada punto a una recta en el espacio de parámetros (r, θ).
-
-    // TODO eventualmente usar memoria compartida para el acumulador
 
     if (pic[gloID] > 0)
     {
@@ -118,7 +118,7 @@ int main(int argc, char **argv)
     // Variables para argumentos
     std::string inputFilename;
     std::string outputFilename = "output.png"; // Valor por defecto
-    float threshold = 100.0f;                  // Valor por defecto, puede ser ajustado
+    float threshold = -1.0f;                   // Valor por defecto que indica cálculo automático
 
     // Procesar argumentos
     for (int i = 1; i < argc; i++)
@@ -177,7 +177,7 @@ int main(int argc, char **argv)
     // CPU calculation
     CPU_HoughTran(inImg.pixels.data(), w, h, &cpuht);
 
-    // pre-compute values to be stored
+    // Precompute cos and sin tables
     float *pcCos = (float *)malloc(sizeof(float) * degreeBins);
     float *pcSin = (float *)malloc(sizeof(float) * degreeBins);
     float rad = 0;
@@ -195,7 +195,7 @@ int main(int argc, char **argv)
     cudaMemcpy(d_Cos, pcCos, sizeof(float) * degreeBins, cudaMemcpyHostToDevice);
     cudaMemcpy(d_Sin, pcSin, sizeof(float) * degreeBins, cudaMemcpyHostToDevice);
 
-    // setup and copy data from host to device
+    // Setup and copy data from host to device
     unsigned char *d_in, *h_in;
     int *d_hough, *h_hough;
 
@@ -216,15 +216,15 @@ int main(int argc, char **argv)
     // Register the event at the start of the kernel (just before the kernel call)
     cudaEventRecord(startEvent, 0); // 0 is the default stream
 
-    // execution configuration uses a 1-D grid of 1-D blocks, each made of 256 threads
+    // Execution configuration uses a 1-D grid of 1-D blocks, each made of 256 threads
     // 1 thread por pixel
-    int blockNum = ceil(w * h / 256);
+    int blockNum = (w * h + 255) / 256; // Corregido: asegura cubrir todos los hilos
     GPU_HoughTran<<<blockNum, 256>>>(d_in, w, h, d_hough, rMax, rScale, d_Cos, d_Sin);
 
     // Register the stop event
     cudaEventRecord(stopEvent, 0);
 
-    // Syncronize the stop event
+    // Synchronize the stop event
     cudaEventSynchronize(stopEvent); // Wait for the event to be recorded!
 
     // Calculate the elapsed time
@@ -236,14 +236,28 @@ int main(int argc, char **argv)
     cudaEventDestroy(startEvent);
     cudaEventDestroy(stopEvent);
 
-    // get results from device
+    // Get results from device
     cudaMemcpy(h_hough, d_hough, sizeof(int) * degreeBins * rBins, cudaMemcpyDeviceToHost);
 
-    // compare CPU and GPU results
+    // Compare CPU and GPU results
+    bool mismatch = false;
     for (i = 0; i < degreeBins * rBins; i++)
     {
         if (cpuht[i] != h_hough[i])
-            printf("Calculation mismatch at : %i %i %i\n", i, cpuht[i], h_hough[i]);
+        {
+            printf("Calculation mismatch at index %i: CPU=%i, GPU=%i\n", i, cpuht[i], h_hough[i]);
+            mismatch = true;
+            break; // Puedes detenerte en el primer error encontrado
+        }
+    }
+
+    if (!mismatch)
+    {
+        printf("CPU and GPU Hough Transform results match.\n");
+    }
+    else
+    {
+        printf("CPU and GPU Hough Transform results do not match.\n");
     }
 
     printf("Kernel time execution (ms): %f\n", milliseconds);
@@ -276,11 +290,14 @@ int main(int argc, char **argv)
         }
         float std_dev = sqrt(variance / (degreeBins * rBins)); // Desviación estándar
         threshold = average + 2 * std_dev;
+
+        printf("Computed Threshold: %f (Average: %f, Std Dev: %f)\n", threshold, average, std_dev);
     }
 
-    printf("Threshold: %f\n", threshold);
+    printf("Threshold for drawing lines: %f\n", threshold);
 
-    struct Line {
+    struct Line
+    {
         float r;
         float theta;
         int weight;
@@ -289,14 +306,16 @@ int main(int argc, char **argv)
     std::vector<Line> lines;
 
     // Find lines
-    for(int rIdx = 0; rIdx < rBins; rIdx++) {
-        for(int tIdx = 0; tIdx < degreeBins; tIdx++) {
+    for (int rIdx = 0; rIdx < rBins; rIdx++)
+    {
+        for (int tIdx = 0; tIdx < degreeBins; tIdx++)
+        {
             int weight = h_hough[rIdx * degreeBins + tIdx];
-            if(weight >= threshold) {
+            if (weight >= threshold)
+            {
                 float theta = tIdx * radInc;
-                float r = rIdx * (2 * rMax / rBins) - rMax;
-                lines.push_back(Line{r, theta, weight}); // Remember, r is the distance from the center of the image
-                                                         // and theta is the angle
+                float r = rIdx * rScale - rMax;          // Corregido: consistente con CPU_HoughTran
+                lines.push_back(Line{r, theta, weight}); // Recuerda, r es la distancia desde el centro de la imagen y theta es el ángulo
             }
         }
     }
@@ -306,16 +325,19 @@ int main(int argc, char **argv)
     // Finally using our small library to draw the lines
     RGBImage rgbImage = convertToRGB(w, h, inImg.pixels);
 
-    // Draw the detected lines in arbitrary an color (IDEA is to then make this a parameter)
+    // Draw the detected lines in arbitrary color (IDEA is to then make this a parameter)
     for (const Line &line : lines)
     {
         drawLine(rgbImage, line.r, line.theta, 255, 0, 0); // Rojo
     }
 
     // Save the image
-    if(saveImage(rgbImage, outputFilename)) {
+    if (saveImage(rgbImage, outputFilename))
+    {
         printf("Image saved to %s\n", outputFilename.c_str());
-    } else {
+    }
+    else
+    {
         printf("Error saving image to %s\n", outputFilename.c_str());
     }
 
