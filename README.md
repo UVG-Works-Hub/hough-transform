@@ -10,5 +10,5 @@ make
 
 Using (houghBase):
 ```
-houghBase.exe <pgm file path>
+houghBase.exe <pgm file path> --output <jpg or png filename including extension> --threshold <optional float>
 ```
