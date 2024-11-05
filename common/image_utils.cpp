@@ -1,7 +1,8 @@
 // image_utils.cpp
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h" // https://github.com/nothings/stb/blob/master/stb_image_write.h
 
 #include "image_utils.h"
-#include "stb_image_write.h" // https://github.com/nothings/stb/blob/master/stb_image_write.h
 #include <cmath>
 
 RGBImage::RGBImage(int w, int h) : width(w), height(h), data(3 * w * h, 0) {}
@@ -59,7 +60,7 @@ void drawLine(RGBImage &image, float r, float theta, unsigned char r_col, unsign
     } else {
         x1 = r / cos_theta;
         y1 = 0;
-        x2 = x1
+        x2 = x1;
         y2 = h;
     }
 
@@ -101,7 +102,7 @@ bool saveImage(const RGBImage &image, const std::string &filename) {
 
     // Determine the format according to the file extension
     if (filename.size() >= 4 && filename.substr(filename.size() - 4) == ".png") {
-        return stbi_write_png(filename.c_str(), image.width, image.height, channels, image.data.data(), stride) != 0;
+        return stbi_write_png(filename.c_str(), image.width, image.height, channels, image.data.data(), stride_in_bytes) != 0;
     }
     else if (filename.size() >= 4 && (filename.substr(filename.size() - 4) == ".jpg" || filename.substr(filename.size() - 5) == ".jpeg")) {
         return stbi_write_jpg(filename.c_str(), image.width, image.height, channels, image.data.data(), 100) != 0; // Calidad 100 >.<
