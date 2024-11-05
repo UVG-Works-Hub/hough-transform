@@ -156,10 +156,33 @@ int main (int argc, char **argv)
   cudaMemcpy (d_in, h_in, sizeof (unsigned char) * w * h, cudaMemcpyHostToDevice);
   cudaMemset (d_hough, 0, sizeof (int) * degreeBins * rBins);
 
+  // CUDA events time measurement
+  cudaEvent_t startEvent, stopEvent;
+  cudaEventCreate(&startEvent);
+  cudaEventCreate(&stopEvent);
+
+  // Register the event at the start of the kernel (just before the kernel call)
+  cudaEventRecord(startEvent, 0); // 0 is the default stream
+
   // execution configuration uses a 1-D grid of 1-D blocks, each made of 256 threads
-  //1 thread por pixel
+  // 1 thread por pixel
   int blockNum = ceil (w * h / 256);
   GPU_HoughTran <<< blockNum, 256 >>> (d_in, w, h, d_hough, rMax, rScale, d_Cos, d_Sin);
+
+  // Register the stop event
+  cudaEventRecord(stopEvent, 0);
+
+  // Syncronize the stop event
+  cudaEventSynchronize(stopEvent); // Wait for the event to be recorded!
+
+  // Calculate the elapsed time
+  float milliseconds = 0;
+  cudaEventElapsedTime(&milliseconds, startEvent, stopEvent); // This returns in the first argument the time between the two events
+  // As the guide says, this has a resolution of approx 0.5 microseconds
+
+  // Destroy the events, just as a good practice
+  cudaEventDestroy(startEvent);
+  cudaEventDestroy(stopEvent);
 
   // get results from device
   cudaMemcpy (h_hough, d_hough, sizeof (int) * degreeBins * rBins, cudaMemcpyDeviceToHost);
@@ -170,6 +193,9 @@ int main (int argc, char **argv)
     if (cpuht[i] != h_hough[i])
       printf ("Calculation mismatch at : %i %i %i\n", i, cpuht[i], h_hough[i]);
   }
+
+  printf("Kernel time execution (ms): %f\n", milliseconds);
+
   printf("Done!\n");
 
   // cleanup
