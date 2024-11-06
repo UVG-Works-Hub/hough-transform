@@ -5,15 +5,20 @@ NVCC = nvcc
 GCC = g++
 CFLAGS = -O3 -I./common
 NVCCFLAGS = -O3 -I./common
-TARGET = houghBase.exe
+TARGET_BASE = houghBase.exe
+TARGET_CONST = houghConstant.exe
 OBJ = pgm.o image_utils.o
 
 # Regla por defecto
-all: $(TARGET)
+all: $(TARGET_BASE) $(TARGET_CONST)
 
-# Regla para el ejecutable
-$(TARGET): houghBase.cu $(OBJ)
-	$(NVCC) $(NVCCFLAGS) houghBase.cu $(OBJ) -o $(TARGET)
+
+$(TARGET_BASE): houghBase.cu $(OBJ)
+	$(NVCC) $(NVCCFLAGS) houghBase.cu $(OBJ) -o $(TARGET_BASE)
+
+
+$(TARGET_CONST): houghConstant.cu $(OBJ)
+	$(NVCC) $(NVCCFLAGS) houghConstant.cu $(OBJ) -o $(TARGET_CONST)
 
 # Regla para pgm.o
 pgm.o: common/pgm.cpp common/pgm.h
@@ -25,4 +30,4 @@ image_utils.o: common/image_utils.cpp common/image_utils.h common/stb_image_writ
 
 # Limpieza
 clean:
-	rm -f $(TARGET) pgm.o image_utils.o
+	rm -f $(TARGET_BASE) $(TARGET_CONST) pgm.o image_utils.o
