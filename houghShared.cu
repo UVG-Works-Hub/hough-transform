@@ -63,6 +63,37 @@ void CPU_HoughTran(unsigned char *pic, int w, int h, int **acc)
 // The accumulator memory needs to be allocated by the host in global memory
 __global__ void GPU_HoughTran(unsigned char *pic, int w, int h, int *acc, float rMax, float rScale)
 {
+    /*
+        a. MODIFICATION
+        Usamos threadIdx.x para obtener el ID del hilo dentro del bloque
+    */
+    int locID = threadIdx.x;
+
+    /*
+        b. MODIFICATION
+        localAcc es una matriz de memoria compartida con degreeBins * rBins elementos
+    */
+    __shared__ int localAcc[degreeBins * rBins];
+
+    /*
+        c. MODIFICATION
+        Inicializamos a 0 todos los elementos de localAcc
+        Cada hilo inicializa múltiples elementos según su locID
+    */
+    for (int i = locID; i < degreeBins * rBins; i += blockDim.x)
+    {
+        localAcc[i] = 0;
+    }
+
+    /*
+        d. MODIFICATION
+        Incluimos la barrera para asegurar que todos los hilos hayan inicializado localAcc
+
+        Referencia:
+        https://www.tutorialspoint.com/cuda/cuda_threads.htm
+    */
+    __syncthreads();
+
     int gloID = blockIdx.x * blockDim.x + threadIdx.x;
     if (gloID >= w * h)
         return; // Corregido: >= en lugar de >
@@ -82,9 +113,30 @@ __global__ void GPU_HoughTran(unsigned char *pic, int w, int h, int *acc, float 
             int rIdx = (r + rMax) / rScale;
             if (rIdx >= 0 && rIdx < rBins)
             {
-                atomicAdd(acc + (rIdx * degreeBins + tIdx), 1);
+                /*
+                    e. MODIFICATION
+                    Actualizar el acumulador local localAcc usando atomicAdd
+                    para evitar condiciones de carrera dentro del bloque
+                */
+                atomicAdd(&localAcc[rIdx * degreeBins + tIdx], 1);
             }
         }
+    }
+
+    /*
+        f. MODIFICATION
+        Incluir una segunda barrera para asegurar que todos los hilos hayan actualizado localAcc
+    */
+    __syncthreads();
+
+    /*
+        g. MODIFICATION
+        Agregar un loop que suma los valores de localAcc al acumulador global acc
+    */
+    for (int i = locID; i < degreeBins * rBins; i += blockDim.x)
+    {
+        // Usar atomicAdd para coordinar el acceso a la memoria global
+        atomicAdd(&acc[i], localAcc[i]);
     }
 }
 
