@@ -1,0 +1,44 @@
+=== Running houghBase.exe ===
+Running ./houghBase.exe (Run #1):
+Execution time: 12.165120 ms
+Running ./houghBase.exe (Run #2):
+Execution time: 18.178177 ms
+Running ./houghBase.exe (Run #3):
+Execution time: 7.244576 ms
+Running ./houghBase.exe (Run #4):
+Execution time: 14.410688 ms
+Running ./houghBase.exe (Run #5):
+Execution time: 20.859039 ms
+
+=== Running houghConstant.exe ===
+Running ./houghConstant.exe (Run #1):
+Execution time: 1.329152 ms
+Running ./houghConstant.exe (Run #2):
+Execution time: 1.315840 ms
+Running ./houghConstant.exe (Run #3):
+Execution time: 1.308832 ms
+Running ./houghConstant.exe (Run #4):
+Execution time: 2.022656 ms
+Running ./houghConstant.exe (Run #5):
+Execution time: 1.405408 ms
+
+=== Running houghShared.exe ===
+Running ./houghShared.exe (Run #1):
+Execution time: 1.146176 ms
+Running ./houghShared.exe (Run #2):
+Execution time: 1.134848 ms
+Running ./houghShared.exe (Run #3):
+Execution time: 2.211840 ms
+Running ./houghShared.exe (Run #4):
+Execution time: 1.136128 ms
+Running ./houghShared.exe (Run #5):
+Execution time: 1.183744 ms
+
+=== Execution Times ===
+Executable           Run1(ms)   Run2(ms)   Run3(ms)   Run4(ms)   Run5(ms)
+Average(ms)
+<--------------------------------------------------------------------------------------->
+houghBase.exe        12.165120  18.178177  7.244576   14.410688  20.859039  14.57
+houghConstant.exe    1.329152   1.315840   1.308832   2.022656   1.405408   1.47
+houghShared.exe      1.146176   1.134848   2.211840   1.136128   1.183744   1.36
+Test execution complete. Check output images.
