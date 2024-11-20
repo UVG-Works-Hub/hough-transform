@@ -1,44 +1,82 @@
 === Running houghBase.exe ===
-Running ./houghBase.exe (Run #1):
-Execution time: 12.165120 ms
-Running ./houghBase.exe (Run #2):
-Execution time: 18.178177 ms
-Running ./houghBase.exe (Run #3):
-Execution time: 7.244576 ms
-Running ./houghBase.exe (Run #4):
-Execution time: 14.410688 ms
-Running ./houghBase.exe (Run #5):
-Execution time: 20.859039 ms
+Running bin/houghBase.exe (Run #1):
+Execution time: 7.006208 ms
+Running bin/houghBase.exe (Run #2):
+Execution time: 8.572928 ms
+Running bin/houghBase.exe (Run #3):
+Execution time: 8.497184 ms
+Running bin/houghBase.exe (Run #4):
+Execution time: 8.368960 ms
+Running bin/houghBase.exe (Run #5):
+Execution time: 7.726336 ms
+Running bin/houghBase.exe (Run #6):
+Execution time: 9.587456 ms
+Running bin/houghBase.exe (Run #7):
+Execution time: 8.384512 ms
+Running bin/houghBase.exe (Run #8):
+Execution time: 8.472224 ms
+Running bin/houghBase.exe (Run #9):
+Execution time: 8.721472 ms
+Running bin/houghBase.exe (Run #10):
+Execution time: 8.044544 ms
 
 === Running houghConstant.exe ===
-Running ./houghConstant.exe (Run #1):
-Execution time: 1.329152 ms
-Running ./houghConstant.exe (Run #2):
-Execution time: 1.315840 ms
-Running ./houghConstant.exe (Run #3):
-Execution time: 1.308832 ms
-Running ./houghConstant.exe (Run #4):
-Execution time: 2.022656 ms
-Running ./houghConstant.exe (Run #5):
-Execution time: 1.405408 ms
+Running bin/houghConstant.exe (Run #1):
+Execution time: 1.281248 ms
+Running bin/houghConstant.exe (Run #2):
+Execution time: 1.287136 ms
+Running bin/houghConstant.exe (Run #3):
+Execution time: 1.302400 ms
+Running bin/houghConstant.exe (Run #4):
+Execution time: 1.261568 ms
+Running bin/houghConstant.exe (Run #5):
+Execution time: 1.298432 ms
+Running bin/houghConstant.exe (Run #6):
+Execution time: 1.259648 ms
+Running bin/houghConstant.exe (Run #7):
+Execution time: 1.259520 ms
+Running bin/houghConstant.exe (Run #8):
+Execution time: 1.962400 ms
+Running bin/houghConstant.exe (Run #9):
+Execution time: 1.931264 ms
+Running bin/houghConstant.exe (Run #10):
+Execution time: 1.475200 ms
 
 === Running houghShared.exe ===
-Running ./houghShared.exe (Run #1):
-Execution time: 1.146176 ms
-Running ./houghShared.exe (Run #2):
-Execution time: 1.134848 ms
-Running ./houghShared.exe (Run #3):
-Execution time: 2.211840 ms
-Running ./houghShared.exe (Run #4):
-Execution time: 1.136128 ms
-Running ./houghShared.exe (Run #5):
-Execution time: 1.183744 ms
+Running bin/houghShared.exe (Run #1):
+Execution time: 1.116000 ms
+Running bin/houghShared.exe (Run #2):
+Execution time: 1.243872 ms
+Running bin/houghShared.exe (Run #3):
+Execution time: 1.101824 ms
+Running bin/houghShared.exe (Run #4):
+Execution time: 1.099776 ms
+Running bin/houghShared.exe (Run #5):
+Execution time: 1.215328 ms
+Running bin/houghShared.exe (Run #6):
+Execution time: 1.098336 ms
+Running bin/houghShared.exe (Run #7):
+Execution time: 1.101632 ms
+Running bin/houghShared.exe (Run #8):
+Execution time: 1.936832 ms
+Running bin/houghShared.exe (Run #9):
+Execution time: 1.101920 ms
+Running bin/houghShared.exe (Run #10):
+Execution time: 1.101536 ms
 
 === Execution Times ===
-Executable           Run1(ms)   Run2(ms)   Run3(ms)   Run4(ms)   Run5(ms)
-Average(ms)
-<--------------------------------------------------------------------------------------->
-houghBase.exe        12.165120  18.178177  7.244576   14.410688  20.859039  14.57
-houghConstant.exe    1.329152   1.315840   1.308832   2.022656   1.405408   1.47
-houghShared.exe      1.146176   1.134848   2.211840   1.136128   1.183744   1.36
+Run      houghBase (ms)       houghConstant (ms)   houghShared (ms)
+<------------------------------------------------------------------------------->
+Run1     7.006208             1.281248             1.116000
+Run2     8.572928             1.287136             1.243872
+Run3     8.497184             1.302400             1.101824
+Run4     8.368960             1.261568             1.099776
+Run5     7.726336             1.298432             1.215328
+Run6     9.587456             1.259648             1.098336
+Run7     8.384512             1.259520             1.101632
+Run8     8.472224             1.962400             1.936832
+Run9     8.721472             1.931264             1.101920
+Run10    8.044544             1.475200             1.101536
+<------------------------------------------------------------------------------->
+Average  8.33                 1.43                 1.21
 Test execution complete. Check output images.
