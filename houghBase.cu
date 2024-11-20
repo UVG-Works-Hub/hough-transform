@@ -92,7 +92,7 @@ __global__ void GPU_HoughTran(unsigned char *pic, int w, int h, int *acc, float 
     // Este cambio es util para los pasos posteriores, ya que facilita el cálculo de la distancia de cada punto a una recta en el espacio de parámetros (r, θ).
 
     int xCoord = gloID % w - xCent;
-    int yCoord = yCent - gloID / w;
+    int yCoord = gloID / w - yCent;
 
     if (pic[gloID] > 0)
     {

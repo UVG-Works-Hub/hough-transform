@@ -102,7 +102,7 @@ __global__ void GPU_HoughTran(unsigned char *pic, int w, int h, int *acc, float 
     int yCent = h / 2;
 
     int xCoord = gloID % w - xCent;
-    int yCoord = yCent - gloID / w;
+    int yCoord =  gloID / w - yCent;
 
     if (pic[gloID] > 0)
     {

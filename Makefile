@@ -16,25 +16,25 @@ all: $(TARGET_BASE) $(TARGET_CONST) $(TARGET_SHARED)
 all: $(TARGET_BASE) $(TARGET_CONST) $(TARGET_SHARED)
 
 $(TARGET_BASE): houghBase.cu $(OBJ)
-    $(NVCC) $(NVCCFLAGS) houghBase.cu $(OBJ) -o $(TARGET_BASE)
+	$(NVCC) $(NVCCFLAGS) houghBase.cu $(OBJ) -o $(TARGET_BASE)
 
 
 $(TARGET_CONST): houghConstant.cu $(OBJ)
-    $(NVCC) $(NVCCFLAGS) houghConstant.cu $(OBJ) -o $(TARGET_CONST)
+	$(NVCC) $(NVCCFLAGS) houghConstant.cu $(OBJ) -o $(TARGET_CONST)
 
 $(TARGET_SHARED): houghShared.cu $(OBJ)
-    $(NVCC) $(NVCCFLAGS) houghShared.cu $(OBJ) -o $(TARGET_SHARED)
+	$(NVCC) $(NVCCFLAGS) houghShared.cu $(OBJ) -o $(TARGET_SHARED)
 
 $(TARGET_SHARED): houghShared.cu $(OBJ)
 	$(NVCC) $(NVCCFLAGS) houghShared.cu $(OBJ) -o $(TARGET_SHARED)
 
 # Regla para pgm.o
 pgm.o: common/pgm.cpp common/pgm.h
-    $(GCC) $(CFLAGS) -c common/pgm.cpp -o pgm.o
+	$(GCC) $(CFLAGS) -c common/pgm.cpp -o pgm.o
 
 # Regla para image_utils.o
 image_utils.o: common/image_utils.cpp common/image_utils.h common/stb_image_write.h
-    $(GCC) $(CFLAGS) -c common/image_utils.cpp -o image_utils.o
+	$(GCC) $(CFLAGS) -c common/image_utils.cpp -o image_utils.o
 
 # Limpieza
 clean:
