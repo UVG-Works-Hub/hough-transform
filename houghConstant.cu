@@ -297,7 +297,7 @@ int main(int argc, char **argv)
     // Draw the detected lines in arbitrary color (IDEA is to then make this a parameter)
     for (const Line &line : lines)
     {
-        drawLine(rgbImage, line.r, line.theta, 255, 0, 0); // Rojo
+        drawLine(rgbImage, line.r, line.theta, 66, 245, 233); 
     }
 
     // Save the image
