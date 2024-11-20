@@ -64,34 +64,37 @@ void CPU_HoughTran(unsigned char *pic, int w, int h, int **acc)
 __global__ void GPU_HoughTran(unsigned char *pic, int w, int h, int *acc, float rMax, float rScale)
 {
     /*
-        a. MODIFICATION
-        Usamos threadIdx.x para obtener el ID del hilo dentro del bloque
-    */
+     * a. MODIFICATION
+     * Usamos threadIdx.x para obtener el ID del hilo dentro del bloque
+     * Este ID se utiliza para distribuir el trabajo de inicialización y consolidación
+     */
     int locID = threadIdx.x;
 
     /*
-        b. MODIFICATION
-        localAcc es una matriz de memoria compartida con degreeBins * rBins elementos
-    */
+     * b. MODIFICATION
+     * localAcc es una matriz de memoria compartida con degreeBins * rBins elementos
+     * Sirve como acumulador local para reducir accesos a memoria global
+     */
     __shared__ int localAcc[degreeBins * rBins];
 
     /*
-        c. MODIFICATION
-        Inicializamos a 0 todos los elementos de localAcc
-        Cada hilo inicializa múltiples elementos según su locID
-    */
+     * c. MODIFICATION
+     * Inicializamos a 0 todos los elementos de localAcc
+     * Cada hilo inicializa múltiples elementos según su locID
+     * El patrón de stride (blockDim.x) asegura una distribución eficiente del trabajo
+     */
     for (int i = locID; i < degreeBins * rBins; i += blockDim.x)
     {
         localAcc[i] = 0;
     }
 
     /*
-        d. MODIFICATION
-        Incluimos la barrera para asegurar que todos los hilos hayan inicializado localAcc
-
-        Referencia:
-        https://www.tutorialspoint.com/cuda/cuda_threads.htm
-    */
+     * d. MODIFICATION
+     * Incluimos la barrera para asegurar que todos los hilos hayan inicializado localAcc
+     * Esta sincronización es necesaria antes de comenzar los cálculos
+     * Referencia:
+     * https://www.tutorialspoint.com/cuda/cuda_threads.htm
+     */
     __syncthreads();
 
     int gloID = blockIdx.x * blockDim.x + threadIdx.x;
@@ -114,25 +117,28 @@ __global__ void GPU_HoughTran(unsigned char *pic, int w, int h, int *acc, float 
             if (rIdx >= 0 && rIdx < rBins)
             {
                 /*
-                    e. MODIFICATION
-                    Actualizar el acumulador local localAcc usando atomicAdd
-                    para evitar condiciones de carrera dentro del bloque
-                */
+                 * e. MODIFICATION
+                 * Actualizar el acumulador local localAcc usando atomicAdd
+                 * para evitar condiciones de carrera dentro del bloque
+                 * Las operaciones atómicas en memoria compartida tienen menor latencia
+                 */
                 atomicAdd(&localAcc[rIdx * degreeBins + tIdx], 1);
             }
         }
     }
 
     /*
-        f. MODIFICATION
-        Incluir una segunda barrera para asegurar que todos los hilos hayan actualizado localAcc
-    */
+     * f. MODIFICATION
+     * Incluir una segunda barrera para asegurar que todos los hilos hayan actualizado localAcc
+     * Esta sincronización es crucial antes de la consolidación final
+     */
     __syncthreads();
 
     /*
-        g. MODIFICATION
-        Agregar un loop que suma los valores de localAcc al acumulador global acc
-    */
+     * g. MODIFICATION
+     * Agregar un loop que suma los valores de localAcc al acumulador global acc
+     * Se mantiene el mismo patrón de stride para eficiencia
+     */
     for (int i = locID; i < degreeBins * rBins; i += blockDim.x)
     {
         // Usar atomicAdd para coordinar el acceso a la memoria global
@@ -349,7 +355,7 @@ int main(int argc, char **argv)
     // Draw the detected lines in arbitrary color (IDEA is to then make this a parameter)
     for (const Line &line : lines)
     {
-        drawLine(rgbImage, line.r, line.theta, 66, 245, 233); 
+        drawLine(rgbImage, line.r, line.theta, 255, 0, 0); // Rojo
     }
 
     // Save the image
