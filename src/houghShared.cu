@@ -87,7 +87,7 @@ __global__ void GPU_HoughTran(unsigned char *pic, int w, int h, int *acc, float 
      * c. MODIFICATION
      * Inicializamos a 0 todos los elementos de localAcc
      * Cada hilo inicializa múltiples elementos según su locID
-     * El patrón de stride (blockDim.x) asegura una distribución eficiente del trabajo
+     * El patrón de stride (blockDim.x) asegura una distribución eficiente del trabajo ya que cada hilo inicializa elementos contiguos porque blockDim.x es múltiplo de degreeBins * rBins
      */
     for (int i = locID; i < degreeBins * rBins; i += blockDim.x)
     {
@@ -97,7 +97,7 @@ __global__ void GPU_HoughTran(unsigned char *pic, int w, int h, int *acc, float 
     /*
      * d. MODIFICATION
      * Incluimos la barrera para asegurar que todos los hilos hayan inicializado localAcc
-     * Esta sincronización es necesaria antes de comenzar los cálculos
+     * Esta sincronización es necesaria antes de comenzar los cálculos porque los hilos dependen de los valores de localAcc para actualizar el acumulador global acc posteriormente
      * Referencia:
      * https://www.tutorialspoint.com/cuda/cuda_threads.htm
      */
@@ -126,7 +126,7 @@ __global__ void GPU_HoughTran(unsigned char *pic, int w, int h, int *acc, float 
                  * e. MODIFICATION
                  * Actualizar el acumulador local localAcc usando atomicAdd
                  * para evitar condiciones de carrera dentro del bloque
-                 * Las operaciones atómicas en memoria compartida tienen menor latencia
+                 * Las operaciones atómicas en memoria compartida tienen menor latencia porque no requieren acceso a memoria global
                  */
                 atomicAdd(&localAcc[rIdx * degreeBins + tIdx], 1);
             }
@@ -143,7 +143,7 @@ __global__ void GPU_HoughTran(unsigned char *pic, int w, int h, int *acc, float 
     /*
      * g. MODIFICATION
      * Agregar un loop que suma los valores de localAcc al acumulador global acc
-     * Se mantiene el mismo patrón de stride para eficiencia
+     * Se mantiene el mismo patrón de stride para eficiencia y evitar condiciones de carrera
      */
     for (int i = locID; i < degreeBins * rBins; i += blockDim.x)
     {
