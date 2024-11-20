@@ -121,25 +121,28 @@ __global__ void GPU_HoughTran(unsigned char *pic, int w, int h, int *acc, float 
             if (rIdx >= 0 && rIdx < rBins)
             {
                 /*
-                    e. MODIFICACION
-                    Actualizar el acumulador local localAcc usando atomicAdd
-                    para evitar condiciones de carrera dentro del bloque
-                */
+                 * e. MODIFICATION
+                 * Actualizar el acumulador local localAcc usando atomicAdd
+                 * para evitar condiciones de carrera dentro del bloque
+                 * Las operaciones atómicas en memoria compartida tienen menor latencia
+                 */
                 atomicAdd(&localAcc[rIdx * degreeBins + tIdx], 1);
             }
         }
     }
 
     /*
-        f. MODIFICACION
-        Incluir una segunda barrera para asegurar que todos los hilos hayan actualizado localAcc
-    */
+     * f. MODIFICATION
+     * Incluir una segunda barrera para asegurar que todos los hilos hayan actualizado localAcc
+     * Esta sincronización es crucial antes de la consolidación final
+     */
     __syncthreads();
 
     /*
-        g. MODIFICACION
-        Agregar un loop que suma los valores de localAcc al acumulador global acc
-    */
+     * g. MODIFICATION
+     * Agregar un loop que suma los valores de localAcc al acumulador global acc
+     * Se mantiene el mismo patrón de stride para eficiencia
+     */
     for (int i = locID; i < degreeBins * rBins; i += blockDim.x)
     {
         // Usar atomicAdd para coordinar el acceso a la memoria global
