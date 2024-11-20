@@ -16,6 +16,8 @@
 #include "../common/pgm.h"
 #include "../common/image_utils.h"
 
+#include <chrono>
+
 const int degreeInc = 2;
 const int degreeBins = 180 / degreeInc;
 const int rBins = 100;
@@ -151,7 +153,12 @@ int main(int argc, char **argv)
     cudaMalloc((void **)&d_Sin, sizeof(float) * degreeBins);
 
     // Calculo en CPU
+    auto start = std::chrono::high_resolution_clock::now();
     CPU_HoughTran(inImg.pixels.data(), w, h, &cpuht);
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+
+    printf("Tiempo de CPU (ms): %ld\n", duration.count());
 
     // Precalcular tablas de cosenos y senos
     float *pcCos = (float *)malloc(sizeof(float) * degreeBins);

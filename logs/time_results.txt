@@ -1,82 +1,113 @@
 === Running houghBase.exe ===
 Running bin/houghBase.exe (Run #1):
-Execution time: 7.006208 ms
+CPU Execution time: 281 ms
+GPU Execution time: 7.026688 ms
 Running bin/houghBase.exe (Run #2):
-Execution time: 8.572928 ms
+CPU Execution time: 377 ms
+GPU Execution time: 6.883328 ms
 Running bin/houghBase.exe (Run #3):
-Execution time: 8.497184 ms
+CPU Execution time: 398 ms
+GPU Execution time: 5.851552 ms
 Running bin/houghBase.exe (Run #4):
-Execution time: 8.368960 ms
+CPU Execution time: 338 ms
+GPU Execution time: 8.246432 ms
 Running bin/houghBase.exe (Run #5):
-Execution time: 7.726336 ms
+CPU Execution time: 389 ms
+GPU Execution time: 6.385088 ms
 Running bin/houghBase.exe (Run #6):
-Execution time: 9.587456 ms
+CPU Execution time: 359 ms
+GPU Execution time: 6.948000 ms
 Running bin/houghBase.exe (Run #7):
-Execution time: 8.384512 ms
+CPU Execution time: 351 ms
+GPU Execution time: 6.477824 ms
 Running bin/houghBase.exe (Run #8):
-Execution time: 8.472224 ms
+CPU Execution time: 317 ms
+GPU Execution time: 7.071968 ms
 Running bin/houghBase.exe (Run #9):
-Execution time: 8.721472 ms
+CPU Execution time: 390 ms
+GPU Execution time: 7.654784 ms
 Running bin/houghBase.exe (Run #10):
-Execution time: 8.044544 ms
+CPU Execution time: 378 ms
+GPU Execution time: 6.699008 ms
 
 === Running houghConstant.exe ===
 Running bin/houghConstant.exe (Run #1):
-Execution time: 1.281248 ms
+CPU Execution time: 287 ms
+GPU Execution time: 1.300096 ms
 Running bin/houghConstant.exe (Run #2):
-Execution time: 1.287136 ms
+CPU Execution time: 398 ms
+GPU Execution time: 1.313920 ms
 Running bin/houghConstant.exe (Run #3):
-Execution time: 1.302400 ms
+CPU Execution time: 318 ms
+GPU Execution time: 1.437920 ms
 Running bin/houghConstant.exe (Run #4):
-Execution time: 1.261568 ms
+CPU Execution time: 256 ms
+GPU Execution time: 1.427072 ms
 Running bin/houghConstant.exe (Run #5):
-Execution time: 1.298432 ms
+CPU Execution time: 391 ms
+GPU Execution time: 1.311904 ms
 Running bin/houghConstant.exe (Run #6):
-Execution time: 1.259648 ms
+CPU Execution time: 340 ms
+GPU Execution time: 1.311072 ms
 Running bin/houghConstant.exe (Run #7):
-Execution time: 1.259520 ms
+CPU Execution time: 418 ms
+GPU Execution time: 1.316864 ms
 Running bin/houghConstant.exe (Run #8):
-Execution time: 1.962400 ms
+CPU Execution time: 329 ms
+GPU Execution time: 1.290112 ms
 Running bin/houghConstant.exe (Run #9):
-Execution time: 1.931264 ms
+CPU Execution time: 338 ms
+GPU Execution time: 1.331200 ms
 Running bin/houghConstant.exe (Run #10):
-Execution time: 1.475200 ms
+CPU Execution time: 342 ms
+GPU Execution time: 1.312768 ms
 
 === Running houghShared.exe ===
 Running bin/houghShared.exe (Run #1):
-Execution time: 1.116000 ms
+CPU Execution time: 275 ms
+GPU Execution time: 1.151232 ms
 Running bin/houghShared.exe (Run #2):
-Execution time: 1.243872 ms
+CPU Execution time: 428 ms
+GPU Execution time: 1.210048 ms
 Running bin/houghShared.exe (Run #3):
-Execution time: 1.101824 ms
+CPU Execution time: 259 ms
+GPU Execution time: 1.135008 ms
 Running bin/houghShared.exe (Run #4):
-Execution time: 1.099776 ms
+CPU Execution time: 242 ms
+GPU Execution time: 1.216512 ms
 Running bin/houghShared.exe (Run #5):
-Execution time: 1.215328 ms
+CPU Execution time: 396 ms
+GPU Execution time: 1.101856 ms
 Running bin/houghShared.exe (Run #6):
-Execution time: 1.098336 ms
+CPU Execution time: 340 ms
+GPU Execution time: 1.226176 ms
 Running bin/houghShared.exe (Run #7):
-Execution time: 1.101632 ms
+CPU Execution time: 394 ms
+GPU Execution time: 1.103104 ms
 Running bin/houghShared.exe (Run #8):
-Execution time: 1.936832 ms
+CPU Execution time: 434 ms
+GPU Execution time: 1.409024 ms
 Running bin/houghShared.exe (Run #9):
-Execution time: 1.101920 ms
+CPU Execution time: 278 ms
+GPU Execution time: 1.100544 ms
 Running bin/houghShared.exe (Run #10):
-Execution time: 1.101536 ms
+CPU Execution time: 456 ms
+GPU Execution time: 1.101824 ms
 
 === Execution Times ===
-Run      houghBase (ms)       houghConstant (ms)   houghShared (ms)
-<------------------------------------------------------------------------------->
-Run1     7.006208             1.281248             1.116000
-Run2     8.572928             1.287136             1.243872
-Run3     8.497184             1.302400             1.101824
-Run4     8.368960             1.261568             1.099776
-Run5     7.726336             1.298432             1.215328
-Run6     9.587456             1.259648             1.098336
-Run7     8.384512             1.259520             1.101632
-Run8     8.472224             1.962400             1.936832
-Run9     8.721472             1.931264             1.101920
-Run10    8.044544             1.475200             1.101536
-<------------------------------------------------------------------------------->
-Average  8.33                 1.43                 1.21
-Test execution complete. Check output images.
+Run      houghBase (ms)       houghConstant (ms)   houghShared (ms)     CPU (ms)
+<---------------------------------------------------------------------------------------->
+Run1     7.026688             1.300096             1.151232             281
+Run2     6.883328             1.313920             1.210048             377
+Run3     5.851552             1.437920             1.135008             398
+Run4     8.246432             1.427072             1.216512             338
+Run5     6.385088             1.311904             1.101856             389
+Run6     6.948000             1.311072             1.226176             359
+Run7     6.477824             1.316864             1.103104             351
+Run8     7.071968             1.290112             1.409024             317
+Run9     7.654784             1.331200             1.100544             390
+Run10    6.699008             1.312768             1.101824             378
+<---------------------------------------------------------------------------------------->
+Average  6.92                 1.33                 1.17                 357.80
+<---------------------------------------------------------------------------------------->
+Speedup  51.70                269.02               305.81
